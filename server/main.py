@@ -17,11 +17,11 @@ def get_id():
 
     try:
         device_id = db.getID(ip)
-        log.log("The device " + ip + " has the ID " + device_id)
+        log.log("The device " + ip + " has the ID " + str(device_id))
     except UnregisteredDeviceException:
         device_id = db.getLastID() + 1
         db.newDevice(ip, device_id)
-        log.log("The device " + ip + " has been given the ID \"" + device_id + "\" and added to the database")
+        log.log("The device " + ip + " has been given the ID \"" + str(device_id) + "\" and added to the database")
 
     return jsonify({'id': device_id}), 200
 
