@@ -1,9 +1,19 @@
 import sys
 import sqlite3
+from datetime import datetime
 
 
 class PDBC:
     conn = None
+
+    def getID(self, ip):
+        pass
+
+    def getLastID(self):
+        pass
+
+    def newDevice(self, ip, device_id):
+        pass
 
     def close(self):
         print("Closing database...")
@@ -23,3 +33,17 @@ class PDBC:
         self.cursor = self.conn.cursor()
 
         print("Done! Database is ready to use")
+
+
+class Log:
+    def __init__(self, file):
+        self.file = open(file, "a")
+
+    def log(self, msg):
+        self.file.write("[" + self.timestamp() + "] - " + msg + "\n")
+
+    def close(self):
+        self.file.close()
+
+    def timestamp(self):
+        return datetime.now().strftime('%Y-%m-%dT%H:%M:%S:%f')
