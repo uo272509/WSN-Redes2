@@ -7,13 +7,13 @@ class PDBC:
     conn = None
 
     def getID(self, ip):
-        pass
+        return 0
 
     def getLastID(self):
-        pass
+        return 0
 
     def newDevice(self, ip, device_id):
-        pass
+        return 0
 
     def close(self):
         print("Closing database...")
@@ -46,4 +46,4 @@ class Log:
         self.file.close()
 
     def timestamp(self):
-        return datetime.now().strftime('%Y-%m-%dT%H:%M:%S:%f')
+        return datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
