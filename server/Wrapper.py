@@ -47,3 +47,4 @@ class Log:
 
     def timestamp(self):
         return datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
+
