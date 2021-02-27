@@ -28,6 +28,6 @@ def get_id():
 
 if __name__ == '__main__':
     atexit.register(db.close)  # On clean exit, close the connections
-    atexit.register(log.close)  # On clean exit, close the connections
+    atexit.register(log.close)  # On clean exit, close the log file
 
     app.run(host="0.0.0.0", port=8000)  # Use for testing
