@@ -6,4 +6,4 @@ class UnregisteredDeviceException(Exception):
     """
     def __init__(self, ip):
         self.ip = ip
-        super.__init__("Device with ip \"" + ip + "\" is not registered")
+        super().__init__("Device with ip \"" + ip + "\" is not registered")
