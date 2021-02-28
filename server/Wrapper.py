@@ -21,5 +21,7 @@ class PDBC:
 
         # Creating a cursor object
         self.cursor = self.conn.cursor()
-
+        sql = '''INSERT INTO device(ID, shard, IP) VALUES(?,?,?)'''
+        self.cursor.execute(sql, (0, 0, '0'))
+        self.conn.commit()
         print("Done! Database is ready to use")
