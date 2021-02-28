@@ -7,13 +7,36 @@ class PDBC:
     conn = None
 
     def getID(self, ip):
-        return 0
+
+        # Creating a cursor object
+        self.cursor = self.conn.cursor()
+        self.cursor.execute("SELECT ID FROM device WHERE IP=?",(ip,))
+        rows = self.cursor.fetchone()
+        self.cursor.close()
+        if not rows:
+            return 0
+
+        return rows.get('value')
 
     def getLastID(self):
-        return 0
 
-    def newDevice(self, ip, device_id):
-        return 0
+        # Creating a cursor object
+        self.cursor = self.conn.cursor()
+        self.cursor.execute("SELECT MAX(ID) FROM device ")
+        rows = self.cursor.fetchone()
+        self.cursor.close()
+        if not rows:
+            return 0
+        return rows.get('value')
+
+    def newDevice(self, ip, shard, device_id):
+
+        # Creating a cursor object
+        self.cursor = self.conn.cursor()
+        sql = '''INSERT INTO device(ID, shard, IP) VALUES(?,?,?)'''
+        self.cursor.execute(sql, (device_id, shard, ip ))
+        self.cursor.close()
+        self.conn.commit()
 
     def close(self):
         print("Closing database...")
@@ -31,9 +54,7 @@ class PDBC:
 
         # Creating a cursor object
         self.cursor = self.conn.cursor()
-        sql = '''INSERT INTO device(ID, shard, IP) VALUES(?,?,?)'''
-        self.cursor.execute(sql, (0, 0, '0'))
-        self.conn.commit()
+
         print("Done! Database is ready to use")
 
 

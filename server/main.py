@@ -5,8 +5,9 @@ from Exceptions import UnregisteredDeviceException
 from Wrapper import PDBC, Log
 
 app = Flask(__name__)
+app.use_reloader=False
 log = Log("requests.log")
-db = PDBC('database.db')  # Connect/Create the database
+db = PDBC('data.db')  # Connect/Create the database
 
 
 @app.route("/getid", methods=["GET"])
