@@ -21,7 +21,7 @@ def get_id():
         log.log("The device " + ip + " has the ID " + str(device_id) + ".")
     except UnregisteredDeviceException:
         device_id = db.getLastID() + 1
-        db.newDevice(ip, device_id)
+        db.newDevice(ip, 0, device_id)
         log.log("The device " + ip + " has been given the ID \"" + str(device_id) + "\" and added to the database.")
 
     return jsonify({'id': device_id}), 200
@@ -35,5 +35,5 @@ def close():  # This function will execute on clean exit
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=8000)  # Use for testing
     log.log("Server has started.")
+    app.run(host="0.0.0.0", port=8000)  # Use for testing
