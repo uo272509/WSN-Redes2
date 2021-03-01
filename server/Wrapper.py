@@ -2,18 +2,35 @@ import sys
 import sqlite3
 from datetime import datetime
 
+from Exceptions import UnregisteredDeviceException
+
 
 class PDBC:
     conn = None
 
     def getID(self, ip):
-        return 0
+        self.cursor.execute("SELECT ID FROM device WHERE IP=?", (ip,))
+        rows = self.cursor.fetchone()
+
+        if not rows:
+            raise UnregisteredDeviceException(ip)
+
+        return rows[0]
 
     def getLastID(self):
-        return 0
+        self.cursor.execute("SELECT MAX(ID) FROM device ")
+        rows = self.cursor.fetchone()
 
-    def newDevice(self, ip, device_id):
-        return 0
+        if not rows or not rows[0]:
+            return 0
+
+        return rows[0]
+
+    def newDevice(self, ip, shard, device_id):
+        sql = '''INSERT INTO device(ID, shard, IP) VALUES(?,?,?)'''
+        self.cursor.execute(sql, (device_id, shard, ip))
+
+        self.conn.commit()
 
     def close(self):
         print("Closing database...")
@@ -25,16 +42,18 @@ class PDBC:
 
     def __init__(self, dbName: str):
         # Establishing the connection
-        self.conn = sqlite3.connect(dbName)
+        self.conn = sqlite3.connect(dbName, check_same_thread=False)
 
         print("Successfully connected to database %s" % dbName)
 
         # Creating a cursor object
         self.cursor = self.conn.cursor()
-        sql = '''INSERT INTO device(ID, shard, IP) VALUES(?,?,?)'''
-        self.cursor.execute(sql, (0, 0, '0'))
-        self.conn.commit()
+
         print("Done! Database is ready to use")
+
+
+def timestamp():
+    return datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
 
 
 class Log:
@@ -42,11 +61,8 @@ class Log:
         self.file = open(file, "a")
 
     def log(self, msg):
-        self.file.write("[" + self.timestamp() + "] - " + msg + "\n")
+        self.file.write("[" + timestamp() + "] - " + msg + "\n")
 
     def close(self):
         self.file.close()
-
-    def timestamp(self):
-        return datetime.now().strftime('%Y-%m-%dT%H:%M:%S.%f')
 
