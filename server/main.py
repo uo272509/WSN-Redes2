@@ -11,36 +11,41 @@ app = Flask(__name__)
 app.use_reloader = False
 log = Log("requests.log")
 db = PDBC('data.db')  # Connect/Create the database
-server_dir=""
+server_dir = ""
 shard = 0
 
-# PROTOCOL
-#machine\ntype,value\ntype,value\ntype,value
 
-
+# PROTOCOL LAN
 @app.route("/receive_data", methods=["POST"])
 def receive_data():
-    dataReceived = request.headers
+    # machine\ntype,value\ntype,value\ntype,value
+
+    dataReceived = str(request.data,'utf-8').split("\n")
     machine = dataReceived.pop(0)
     for line in dataReceived:
-        resend_data(Wrapper.timestamp(), machine, shard, "", line.split(",")[1], "WIFI" )
-    pass
+        valuetype = line.split(",")[0]
+        value = line.split(",")[1]
+
+        resend_data(Wrapper.timestamp(), machine, "", value, "WIFI")
+        log.log("The device " + machine + " sent the value " + value + " of type " + valuetype)
+
+    return "OK"
 
 
 # Protocol WAN
-def resend_data(timestamp, machine, shard, sensorName, value, net):
-    data = {
-        [{"timestamp": timestamp,
+def resend_data(timestamp, machine, sensorName, value, net):
+    data = [{
+          "timestamp": timestamp,
           "machine": machine,
           "shard": shard,
           "type": sensorName,
           "value": value,
           "net": net
           }]
-        }
 
+    # r = requests.post(server_dir, params=json.dumps(data))
+    return "OK"
 
-    r = requests.post(server_dir, params=data)
 
 @app.route("/getid", methods=["GET"])
 def get_id():
