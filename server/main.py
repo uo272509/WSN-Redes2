@@ -2,6 +2,7 @@ import atexit
 from flask import Flask, request, jsonify, json
 import requests
 
+import Wrapper
 from Exceptions import UnregisteredDeviceException
 from Wrapper import PDBC, Log
 
@@ -11,11 +12,18 @@ app.use_reloader = False
 log = Log("requests.log")
 db = PDBC('data.db')  # Connect/Create the database
 server_dir=""
+shard = 0
+
+# PROTOCOL
+#machine\ntype,value\ntype,value\ntype,value
 
 
-# PROTOCOL LAN
 @app.route("/receive_data", methods=["POST"])
 def receive_data():
+    dataReceived = request.headers
+    machine = dataReceived.pop(0)
+    for line in dataReceived:
+        resend_data(Wrapper.timestamp(), machine, shard, "", line.split(",")[1], "WIFI" )
     pass
 
 
@@ -30,6 +38,7 @@ def resend_data(timestamp, machine, shard, sensorName, value, net):
           "net": net
           }]
         }
+
 
     r = requests.post(server_dir, params=data)
 
