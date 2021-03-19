@@ -7,6 +7,7 @@ from Exceptions import UnregisteredDeviceException
 from Wrapper import PDBC, Log
 
 app = Flask(__name__)
+
 app.use_reloader = False
 log = Log("requests.log")
 db = PDBC('data.db')  # Connect/Create the database
@@ -37,6 +38,7 @@ def resend_data(timestamp, machine, shard, sensorName, value, net):
           "net": net
           }]
         }
+
 
     r = requests.post(server_dir, params=data)
 
