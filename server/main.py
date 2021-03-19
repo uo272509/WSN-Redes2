@@ -1,13 +1,46 @@
 import atexit
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, json
+import requests
 
+import Wrapper
 from Exceptions import UnregisteredDeviceException
 from Wrapper import PDBC, Log
 
 app = Flask(__name__)
-log = Log("requests.log")
-db = PDBC('database.db')  # Connect/Create the database
 
+app.use_reloader = False
+log = Log("requests.log")
+db = PDBC('data.db')  # Connect/Create the database
+server_dir=""
+shard = 0
+
+# PROTOCOL
+#machine\ntype,value\ntype,value\ntype,value
+
+
+@app.route("/receive_data", methods=["POST"])
+def receive_data():
+    dataReceived = request.headers
+    machine = dataReceived.pop(0)
+    for line in dataReceived:
+        resend_data(Wrapper.timestamp(), machine, shard, "", line.split(",")[1], "WIFI" )
+    pass
+
+
+# Protocol WAN
+def resend_data(timestamp, machine, shard, sensorName, value, net):
+    data = {
+        [{"timestamp": timestamp,
+          "machine": machine,
+          "shard": shard,
+          "type": sensorName,
+          "value": value,
+          "net": net
+          }]
+        }
+
+
+    r = requests.post(server_dir, params=data)
 
 @app.route("/getid", methods=["GET"])
 def get_id():
@@ -20,7 +53,7 @@ def get_id():
         log.log("The device " + ip + " has the ID " + str(device_id) + ".")
     except UnregisteredDeviceException:
         device_id = db.getLastID() + 1
-        db.newDevice(ip, device_id)
+        db.newDevice(ip, 0, device_id)
         log.log("The device " + ip + " has been given the ID \"" + str(device_id) + "\" and added to the database.")
 
     return jsonify({'id': device_id}), 200
@@ -34,5 +67,5 @@ def close():  # This function will execute on clean exit
 
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=8000)  # Use for testing
     log.log("Server has started.")
+    app.run(host="0.0.0.0", port=8000)  # Use for testing
