@@ -9,6 +9,12 @@ from Exceptions import UnregisteredDeviceException
 class PDBC:
     conn = None
 
+    def insert(self, whenD, machineID, shard, typeD, value, net):
+        sql = '''INSERT INTO dataD(whenD, whoMachine, whoShard, typeD, valueD, net) VALUES(?,?,?,?,?,?)'''
+        self.cursor.execute(sql, (whenD, machineID, shard, typeD, value, net))
+
+        self.conn.commit()
+
     def getID(self, ip):
         self.cursor.execute("SELECT ID FROM device WHERE IP=?", (ip,))
         rows = self.cursor.fetchone()
