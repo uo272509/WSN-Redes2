@@ -1,17 +1,24 @@
 #include "esp_http_client.h"
+#include "WiFi.h"
 #include <string.h>
 #define DATA_MAX_SIZE 512
 
-
 esp_err_t err;
 const esp_http_client_config_t config = {
-  .url = "http://192.168.0.100/"
+  .url = "http://192.168.0.100:8000/recieve_data"
+  //.port = 8000, 
 };
 esp_http_client_handle_t connHandle;
 
 
+const char* ssid = "tarta2";
+const char* password =  "AguaSanJoaquin2litros";
+
+
 char *data;
 int dataLen;
+
+uint8_t dev_id;
 
 void initHTTPConnection() {
   connHandle = esp_http_client_init(&config);
@@ -30,18 +37,53 @@ void sendPOST() {
   Serial.printf("Request made, err: %d", err);
 }
 
+
+void getDevID() {
+  esp_http_client_config_t set = {
+    .url = "http://192.168.0.100:8000/getid"
+    //.port = 8000,
+  };
+
+  esp_http_client_handle_t conn = esp_http_client_init(&set);
+  esp_http_client_set_method(conn, HTTP_METHOD_GET);
+  err = esp_http_client_perform(conn);
+
+  if(err == ESP_OK) {
+    dataLen = esp_http_client_read(conn, data, DATA_MAX_SIZE);
+    Serial.printf("dataLen = %d, dev_id: %d\n", dataLen, dev_id);
+  }
+  else {
+    Serial.println("error in get dev_id");
+dev_idError:
+    delay(10000);
+    goto dev_idError;
+  }
+  
+}
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200); // set serial for usb printing
-  data = malloc(sizeof(char)*DATA_MAX_SIZE);
+  data = (char*)malloc(sizeof(char)*DATA_MAX_SIZE);
   dataLen = 0;
+ 
+  WiFi.begin(ssid, password);
+ 
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.println("Connecting to WiFi..");
+  }
+ 
+  Serial.println("Connected to the WiFi network");
   
+  getDevID();
   initHTTPConnection();
+
   
 }
 
 #define PIN_PHOTORESISTOR A0
-int photoresistor = 0;
+uint16_t photoresistor = 0;
 
 void readPhotoresistor() {
   photoresistor = analogRead(PIN_PHOTORESISTOR);
@@ -49,9 +91,21 @@ void readPhotoresistor() {
   return;
 }
 
+void prepareData() {
+  
+}
+
+void sendData() {
+  
+}
+
 void loop() {
   // put your main code here, to run repeatedly:
+
+  
   readPhotoresistor();
+  prepareData();
+  sendData();
   
   delay(1000);
   
