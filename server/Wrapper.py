@@ -1,3 +1,4 @@
+import os
 import sys
 import sqlite3
 from datetime import datetime
@@ -41,6 +42,8 @@ class PDBC:
         print("Successfully closed connection to database!")
 
     def __init__(self, dbName: str):
+        isEmpty = not os.path.exists(dbName)
+
         # Establishing the connection
         self.conn = sqlite3.connect(dbName, check_same_thread=False)
 
@@ -48,6 +51,25 @@ class PDBC:
 
         # Creating a cursor object
         self.cursor = self.conn.cursor()
+
+        if isEmpty:
+            print("Oops! The database is empty. Populating...")
+
+            if not os.path.isfile("database.sql"):
+                print("But... but... the schema does not exist... Come back with a 'database.sql' or don't come back!")
+                self.close()
+                os.remove(dbName)
+
+                sys.exit(-1)
+
+            with open("database.sql", 'r') as sqlfile:
+                # Put everything into one line
+                lines = sqlfile.read().replace("\r\n", "").replace("\n", "")
+
+                # Execute each of the statements
+                for statement in lines.split(";"):
+                    self.cursor.execute(statement)
+                    self.conn.commit()
 
         print("Done! Database is ready to use")
 
