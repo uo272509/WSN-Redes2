@@ -20,7 +20,7 @@ shard = 0
 def receive_data():
     # machine\ntype,value\ntype,value\ntype,value
 
-    dataReceived = str(request.data,'utf-8').split("\n")
+    dataReceived = str(request.data, 'utf-8').split("\n")
     machine = dataReceived.pop(0)
     for line in dataReceived:
         valuetype = line.split(",")[0]
@@ -35,13 +35,13 @@ def receive_data():
 # Protocol WAN
 def resend_data(timestamp, machine, sensorName, value, net):
     data = [{
-          "timestamp": timestamp,
-          "machine": machine,
-          "shard": shard,
-          "type": sensorName,
-          "value": value,
-          "net": net
-          }]
+        "timestamp": timestamp,
+        "machine": machine,
+        "shard": shard,
+        "type": sensorName,
+        "value": value,
+        "net": net
+    }]
 
     # r = requests.post(server_dir, params=json.dumps(data))
     return "OK"
