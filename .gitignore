@@ -193,3 +193,6 @@ dkms.conf
 
 # Pycharm things
 **/.idea/
+
+# Databases
+**/*.db
