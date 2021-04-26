@@ -26,7 +26,9 @@ def receive_data():
         valuetype = line.split(",")[0]
         value = line.split(",")[1]
 
-        resend_data(Wrapper.timestamp(), machine, "", value, "WIFI")
+        if server_dir != "":
+            resend_data(Wrapper.timestamp(), machine, valuetype, value, "WIFI")
+
         log.log("The device " + machine + " sent the value " + value + " of type " + valuetype)
 
     return "OK"
@@ -43,8 +45,8 @@ def resend_data(timestamp, machine, sensorName, value, net):
         "net": net
     }]
 
-    # r = requests.post(server_dir, params=json.dumps(data))
-    return "OK"
+    r = requests.post(server_dir, json=json.dumps(data))
+    return r.status_code
 
 
 @app.route("/getid", methods=["GET"])
@@ -69,6 +71,7 @@ def close():  # This function will execute on clean exit
     db.close()  # Close the database connections
     log.log("Server is shutting down.")  # Close the log file
     log.close()  # Close the log file
+    print("Database and log closed successfully")
 
 
 if __name__ == '__main__':
