@@ -19,17 +19,19 @@ shard = 0
 @app.route("/receive_data", methods=["POST"])
 def receive_data():
     # machine\ntype,value\ntype,value\ntype,value
-
     dataReceived = str(request.data, 'utf-8').split("\n")
-    machine = dataReceived.pop(0)
+
+    machineID = dataReceived.pop(0)
     for line in dataReceived:
         valuetype = line.split(",")[0]
         value = line.split(",")[1]
 
+        # If there is a central server, resend the data
         if server_dir != "":
-            resend_data(Wrapper.timestamp(), machine, valuetype, value, "WIFI")
-
-        log.log("The device " + machine + " sent the value " + value + " of type " + valuetype)
+            resend_data(Wrapper.timestamp(), machineID, valuetype, value, "WIFI")
+        else:  # Otherwise, insert it into our database
+            db.insert(Wrapper.timestamp(), machineID, shard, valuetype, value, "WIFI")
+        log.log("The device " + machineID + " sent the value " + value + " of type " + valuetype)
 
     return "OK"
 
