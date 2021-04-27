@@ -91,12 +91,31 @@ void readPhotoresistor() {
   return;
 }
 
+
 void prepareData() {
-  
+  boolean lock=false;
+  int cmdIndex = 0;
+  char cmd[dataLen];
+  char incomingByte;
+  if (incomingByte=Serial.available() > 0) {
+    char incomingByte = Serial.read();
+    if(incomingByte==dev_id){
+      cmd[cmdIndex]=incomingByte;
+      cmdIndex = cmdIndex+1;
+      lock=true;
+    }
+    if (lock){
+      cmd[cmdIndex]=byteIn;
+      cmdIndex=cmdIndex+1;
+    }
+  }
 }
 
 void sendData() {
-  
+  dataLen = strlen(data);
+  esp_http_client_set_method(connHandle, HTTP_METHOD_POST);
+  esp_http_client_set_post_field(connHandle, dataString, dataLen);
+  err = esp_http_client_perform(connHandle);
 }
 
 void loop() {
