@@ -194,5 +194,5 @@ dkms.conf
 # Pycharm things
 **/.idea/
 
-# ignore database, lol
-data.db
+# Databases
+**/*.db
