@@ -33,7 +33,7 @@ def prepareData(temp):
 
 def sendData(data):
     print(f"Sending: {repr(data)}.")
-    r = requests.post("http://192.168.0.100:8000/recieve_data", data=data)
+    r = requests.post("http://192.168.0.100:8000/receive_data", data=data)
     pass
 
 
