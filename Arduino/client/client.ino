@@ -5,7 +5,7 @@
 
 esp_err_t err;
 const esp_http_client_config_t config = {
-  .url = "http://192.168.0.100:8000/recieve_data"
+  .url = "http://192.168.0.100:8000/receive_data"
   //.port = 8000, 
 };
 esp_http_client_handle_t connHandle;
