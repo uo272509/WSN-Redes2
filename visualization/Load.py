@@ -46,6 +46,3 @@ def LoadData(dbName: str):
         plt.grid(True)
         plt.gcf().autofmt_xdate()
         plt.show()
-        #    print(s)
-
-        #print(dates)
