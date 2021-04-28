@@ -39,6 +39,8 @@ void sendPOST() {
 
 
 void getDevID() {
+  char* toColonPlus;
+  int offset = 0;
   esp_http_client_config_t set = {
     .url = "http://192.168.0.100:8000/getid"
     //.port = 8000,
@@ -51,10 +53,19 @@ void getDevID() {
   if(err == ESP_OK) {
     dataLen = esp_http_client_read(conn, data, DATA_MAX_SIZE);
     Serial.printf("dataLen = %d, dev_id: %d\n", dataLen, dev_id);
+
+    toColonPlus = strchr(data, ':');
+    toColonPlus++;
+    while(*(toColonPlus+offset) != '}') {
+      offset++;
+    }
+    *(toColonPlus+offset) = '\0';
+    dev_id = atoi(toColonPlus);
   }
   else {
-    Serial.println("error in get dev_id");
+    
 dev_idError:
+    Serial.println("error in get dev_id");
     delay(10000);
     goto dev_idError;
   }
@@ -94,7 +105,7 @@ void readPhotoresistor() {
 
 
 void prepareData() {
-  dataLen=sprintf (data, "%d\n light,%d", dev_id, photoresistor);
+  dataLen=sprintf (data, "%d\nlight,%d", dev_id, photoresistor);
   
 }
 
@@ -102,6 +113,17 @@ void sendData() {
   esp_http_client_set_method(connHandle, HTTP_METHOD_POST);
   esp_http_client_set_post_field(connHandle, data, dataLen);
   err = esp_http_client_perform(connHandle);
+  
+  if(err == ESP_OK) {
+   Serial.printf("%s\n----------------", data);
+  }
+  else {
+    
+sendDataError:
+    Serial.println("error in get sendData");
+    delay(10000);
+    goto sendDataError;
+  }
 }
 
 void loop() {
