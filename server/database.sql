@@ -13,6 +13,5 @@ CREATE TABLE dataD(
 	valueD REAL NOT NULL,
 	net TEXT NOT NULL,
 	CONSTRAINT PK_DataD PRIMARY KEY (whenD, whoMachine, whoShard),
-	CONSTRAINT FK_DatD_Device FOREIGN KEY (whoMachine) REFERENCES Device(ID),
-	CONSTRAINT FK_DatD_Device2 FOREIGN KEY (whoShard) REFERENCES Device(shard)
+	CONSTRAINT FK_DatD_Device FOREIGN KEY (whoMachine, whoShard) REFERENCES Device(ID, shard)
 );
