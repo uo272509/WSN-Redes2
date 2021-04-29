@@ -19,7 +19,7 @@ shard = 0
 @app.route("/receive_data", methods=["POST"])
 def receive_data():
     # machine\ntype,value\ntype,value\ntype,value
-    dataReceived = str(request.data, 'utf-8').split("\n")
+    dataReceived = str(request.get_data(), 'utf-8').split("\n")
 
     machineID = dataReceived.pop(0)
     for line in dataReceived:
